@@ -1,28 +1,26 @@
 const express = require('express');
+const productRoutes = require('./product.routes');
+const { logReq } = require('./middleware');
+const { errorResponder } = require('./error.middleware')
 
 const app = express();
 
-const products = [
-    { id: 1, name: 'Product 1', brand: 'Brand A' },
-    { id: 2, name: 'Product 2', brand: 'Brand B' },
-    { id: 3, name: 'Product 3', brand: 'Brand A' }
-];
+const PORT = 3000;
 
-app.get('/', (_request, response) => {
+app.use(logReq);
+app.use(productRoutes);
+app.use(errorResponder);
+
+app.get('/', (_req, res) => {
     // send back a response in plain text
-    response.send('response for GET request');
+    res.send(`
+        <h1>Welcome to our shop!</h1>
+        <a href="/products">See all products</a><hr>
+        <a href="/products/Brand%20A">See brand A's products</a><hr>
+        <a href="/products/1">See the first product</a>`
+    );
 });
 
-// Route with a route parameter to get products by brand
-app.get('/products/:brand', (req, res) => {
-    const { brand } = req.params; // Access the brand parameter from the URL
-  
-    // Filter products based on the brand parameter
-    const filteredProducts = products.filter(product => product.brand === brand);
-  
-    res.json(filteredProducts); // Send the filtered products as a JSON response
-  });
-
 // start the server
-app.listen(3000,
-    () => console.log('Server listening on port 3000.'));
+app.listen(PORT,
+    () => console.log(`Server listening on port ${PORT}.`));
