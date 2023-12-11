@@ -1,24 +1,26 @@
-const http = require('http');
-const port = 3000; // Порт, на якому буде працювати сервер
+const express = require('express');
+const productRoutes = require('./product.routes');
+const { logReq } = require('./middleware');
+const { errorResponder } = require('./error.middleware')
 
-// Створення HTTP-сервера
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/html' }); // Повідомлюємо що формат буде HTML щоб браузер його відобразив
-    const url = req.url;
-    if (url === '/about') {
-        res.write('<h1>about us page<h1>'); //write a response
-        res.end(); //end the response
-    } else if (url === '/contact') {
-        res.write('<h1>contact us page<h1>'); //write a response
-        res.end(); //end the response
-    } else {
-        res.write('<h1>Hello World!<h1>'); //write a response
-        res.write('<h2>My name Illia<h2>'); //write a response
-        res.end(); //end the response
-    }
+const app = express();
+
+const PORT = 3000;
+
+app.use(logReq);
+app.use(productRoutes);
+app.use(errorResponder);
+
+app.get('/', (_req, res) => {
+    // send back a response in plain text
+    res.send(`
+        <h1>Welcome to our shop!</h1>
+        <a href="/products">See all products</a><hr>
+        <a href="/products/Brand%20A">See brand A's products</a><hr>
+        <a href="/products/1">See the first product</a>`
+    );
 });
 
-// Прослуховування порту та адреси сервера
-server.listen(port, () => {
-    console.log(`server start at http://localhost:${port}/`);
-});
+// start the server
+app.listen(PORT,
+    () => console.log(`Server listening on port ${PORT}.`));
