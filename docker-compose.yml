@@ -11,6 +11,18 @@ services:
     ports:
       - "5432:5432"
 
+  web:
+    build: ./
+    env_file:
+      - .env
+    command: npm run dev
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: node_course_pgadmin_container
