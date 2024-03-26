@@ -5,11 +5,23 @@ services:
     image: postgres
     container_name: node_course_postgres_container
     environment:
-      POSTGRES_USER: nodejs_course_admin
-      POSTGRES_PASSWORD: my_password
-      POSTGRES_DB: nodejs_course_database
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
     ports:
       - "5432:5432"
+
+  web:
+    build: ./
+    env_file:
+      - .env
+    command: npm run dev
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
 
   pgadmin:
     image: dpage/pgadmin4
